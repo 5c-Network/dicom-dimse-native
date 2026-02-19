@@ -34,6 +34,7 @@ export interface moveScuOptions extends scuOptions {
 export interface storeScuOptions extends scuOptions {
     sourcePath: string;
     netTransferPropose?: string;
+    maxPduSize?: number;  // PDU size in bytes (default: 131072 = 128KB)
 }
 export interface storeScpOptions extends scpOptions {
     storagePath?: string;

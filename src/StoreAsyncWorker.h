@@ -35,4 +35,5 @@ private:
         OFFilename            m_sourceDirectory;
         unsigned long         m_acse_timeout;
         unsigned long         m_dimse_timeout;
+        unsigned long         m_maxPduSize;
 };

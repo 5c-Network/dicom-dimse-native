@@ -72,7 +72,7 @@ namespace ns {
     };
 
     struct sInput {
-        sInput() : verbose(false), permissive(false), storeOnly(false), writeFile(true), lossyQuality(80), enableRecompression(false) {}
+        sInput() : verbose(false), permissive(false), storeOnly(false), writeFile(true), lossyQuality(80), enableRecompression(false), maxPduSize(131072) {}
         sIdent source;
         sIdent target;
         std::string storagePath;
@@ -90,6 +90,7 @@ namespace ns {
         bool storeOnly;
         bool writeFile;
         bool enableRecompression;
+        int maxPduSize;
         inline bool valid() {
             return source.valid() && target.valid();
         }
@@ -210,6 +211,13 @@ namespace ns {
         catch (...) {}
         try {
             in.lossyQuality = toInt(j, "lossyQuality");
+        }
+        catch (...) {}
+        try {
+            int pdu = toInt(j, "maxPduSize");
+            if (pdu > 0) {
+                in.maxPduSize = pdu;
+            }
         }
         catch (...) {}
         return in;

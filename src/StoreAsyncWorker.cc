@@ -38,6 +38,7 @@ StoreAsyncWorker::StoreAsyncWorker(std::string data, Function &callback) : BaseA
 
     m_acse_timeout = 60;
     m_dimse_timeout = 60;
+    m_maxPduSize = 131072;  // 128KB default (optimal for most networks)
     m_sourceDirectory = "";
 }
 
@@ -67,6 +68,12 @@ void StoreAsyncWorker::Execute(const ExecutionProgress &progress)
     // DcmXfer netTransPropose = in.netTransferPropose.empty() ? DcmXfer(EXS_Unknown) : DcmXfer(in.netTransferPropose.c_str());
     // DCMNET_INFO("proposed network transfer syntax for outgoing associations: " << netTransPropose.getXferName());
     // m_networkTransferSyntax = netTransPropose.getXfer();
+
+    // Set PDU size from config (default 128KB for optimal performance)
+    if (in.maxPduSize > 0) {
+        m_maxPduSize = in.maxPduSize;
+    }
+    DCMNET_INFO("Using max PDU size: " << m_maxPduSize << " bytes");
 
     bool success = sendStoreRequest(in.target.aet.c_str(), in.target.ip.c_str(), OFstatic_cast(Uint16, in.target.port), in.source.aet.c_str() );
 
@@ -184,7 +191,7 @@ bool StoreAsyncWorker::sendStoreRequest(const OFString& peerTitle, const OFStrin
     storageSCU.setPeerPort(OFstatic_cast(Uint16, peerPort));
     storageSCU.setPeerAETitle(peerTitle);
     storageSCU.setAETitle(ourTitle);
-    storageSCU.setMaxReceivePDULength(OFstatic_cast(Uint32, ASC_DEFAULTMAXPDU));
+    storageSCU.setMaxReceivePDULength(OFstatic_cast(Uint32, m_maxPduSize));
     storageSCU.setACSETimeout(OFstatic_cast(Uint32, m_acse_timeout));
     storageSCU.setDIMSETimeout(OFstatic_cast(Uint32, m_dimse_timeout));
     storageSCU.setDIMSEBlockingMode(DIMSE_BLOCKING);
